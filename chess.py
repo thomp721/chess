@@ -28,18 +28,13 @@ class Piece:
     def get_color(self):
       return self.color
 
-
     def valid_move(self, new_index):
       return 0
-
-
 
     def move(self, new_index):
       ret = self.valid_move(new_index)
       if (ret == 0):
         return 0
-
-
       list[new_index] = list[self.index]
       list[self.index] = 'E'
       self.index = new_index
@@ -53,11 +48,9 @@ class Pawn(Piece):
         self.moved = 1
 
     def valid_move(self, new_index):
-      print("here")
       if (new_index < 0):
         return 0
       if (self.color == "white"):
-        print("here2")
         if ((new_index != self.index - 8) & (new_index != self.index - 16)):
           if ((new_index != self.index - 7) & (new_index != self.index - 9)):
             return 0
@@ -70,7 +63,6 @@ class Pawn(Piece):
 
 
         if (self.moved == 1):
-          print("here4")
           if (new_index == (self.index - 16)):
             return 0
           if (list[new_index] == 'E'):
@@ -91,6 +83,39 @@ class Pawn(Piece):
               return 1
             else:
               return 0
+      if (self.color == "black"):
+        if ((new_index != self.index + 8) & (new_index != self.index + 16)):
+          if ((new_index != self.index + 7) & (new_index != self.index + 9)):
+            return 0
+          if (list[new_index] == 'E'):
+            return 0
+          if (list[new_index].get_color() == "white"):
+            self.pawn_moved()
+            return 1
+          return 0
+
+
+        if (self.moved == 1):
+          if (new_index == (self.index + 16)):
+            return 0
+          if (list[new_index] == 'E'):
+            self.pawn_moved()
+            return 1
+          else:
+            return 0
+        else:
+          if (new_index == (self.index + 16)):
+            if ((list[self.index + 8] == 'E') & (list[self.index + 16] == 'E')):
+              self.pawn_moved()
+              return 1
+            else:
+              return 0
+          else:
+            if (list[new_index] == 'E'):
+              self.pawn_moved()
+              return 1
+            else:
+              return 0
       return 0
 
 class Rook(Piece):
@@ -99,29 +124,281 @@ class Rook(Piece):
     def __init__(self, index, color, typ):
       super(Rook, self).__init__(index, color, typ)
 
+    def valid_move(self, new_index):
+      if (new_index < 0):
+        return 0
+      blocked = 0
+      if (((new_index - self.index) % 8) == 0):
+        print(self.index)
+        print(new_index)
+        if (new_index > self.index):
+          for x in range(self.index + 8, new_index, 8):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (new_index < self.index):
+          for x in range(self.index - 8, new_index, -8):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (blocked == 1):
+          return 0
+        if (list[new_index] == 'E'):
+          return 1
+        if (list[new_index].get_color() == self.get_color()):
+          return 0
+        return 1
+      zero_index = self.index - (self.index % 8)
+      print(zero_index)
+      horizontal = 0
+      for x in range(zero_index, zero_index + 8):
+        if (x == new_index):
+          horizontal = 1
+      if (horizontal != 1):
+        return 0
+      if (self.index < new_index):
+        for x in range(self.index + 1, new_index):
+          if (list[x] != 'E'):
+            blocked = 1
+      if (self.index > new_index):
+        for x in range(self.index - 1, new_index, -1):
+          if (list[x] != 'E'):
+            blocked = 1
+      if (blocked == 1):
+        print("blocked?")
+        return 0
+      if (list[new_index] == 'E'):
+        return 1
+      if (list[new_index].get_color() == self.get_color()):
+        return 0
+      return 1
+
+
 class Knight(Piece):
     typ = 'N'
     moved = 0
     def __init__(self, index, color, typ):
       super(Knight, self).__init__(index, color, typ)
+    def valid_move(self, new_index):
+      placeholder = self.index - 17
+      valid = 0
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 2
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 5
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 4
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 12
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 4
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 5
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 2
+      if (new_index == placeholder):
+        valid = 1
+      if (valid == 0):
+        return 0
+      if (list[new_index] == 'E'):
+        return 1
+      if (list[new_index].get_color() == self.color):
+        return 0
+      return 1
+
 
 class Bishop(Piece):
     typ = 'B'
     moved = 0
     def __init__(self, index, color, typ):
       super(Bishop, self).__init__(index, color, typ)
+    def valid_move(self, new_index):
+      if (new_index < 0):
+        return 0
+      blocked = 0
+      if ((((new_index - self.index) % 9) == 0)):
+        print(self.index)
+        print(new_index)
+        if (new_index > self.index):
+          for x in range(self.index + 9, new_index, 9):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (new_index < self.index):
+          for x in range(self.index - 9, new_index, -9):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (blocked == 1):
+          return 0
+        if (list[new_index] == 'E'):
+          return 1
+        if (list[new_index].get_color() == self.get_color()):
+          return 0
+        return 1
+      if ((((new_index - self.index) % 7) == 0)):
+        print(self.index)
+        print(new_index)
+        if (new_index > self.index):
+          for x in range(self.index + 7, new_index, 7):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (new_index < self.index):
+          for x in range(self.index - 7, new_index, -7):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (blocked == 1):
+          return 0
+        if (list[new_index] == 'E'):
+          return 1
+        if (list[new_index].get_color() == self.get_color()):
+          return 0
+        return 1
+      return 0
 
 class Queen(Piece):
     typ = 'Q'
     moved = 0
     def __init__(self, index, color, typ):
       super(Queen, self).__init__(index, color, typ)
-
+    def valid_move(self, new_index):
+      if (new_index < 0):
+        return 0
+      blocked = 0
+      if ((((new_index - self.index) % 9) == 0)):
+        print(self.index)
+        print(new_index)
+        if (new_index > self.index):
+          for x in range(self.index + 9, new_index, 9):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (new_index < self.index):
+          for x in range(self.index - 9, new_index, -9):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (blocked == 1):
+          return 0
+        if (list[new_index] == 'E'):
+          return 1
+        if (list[new_index].get_color() == self.get_color()):
+          return 0
+        return 1
+      if ((((new_index - self.index) % 7) == 0)):
+        print(self.index)
+        print(new_index)
+        if (new_index > self.index):
+          for x in range(self.index + 7, new_index, 7):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (new_index < self.index):
+          for x in range(self.index - 7, new_index, -7):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (blocked == 1):
+          return 0
+        if (list[new_index] == 'E'):
+          return 1
+        if (list[new_index].get_color() == self.get_color()):
+          return 0
+        return 1
+      if (new_index < 0):
+        return 0
+      blocked = 0
+      if (((new_index - self.index) % 8) == 0):
+        print(self.index)
+        print(new_index)
+        if (new_index > self.index):
+          for x in range(self.index + 8, new_index, 8):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (new_index < self.index):
+          for x in range(self.index - 8, new_index, -8):
+            print(x)
+            if (list[x] != 'E'):
+              blocked = 1
+        if (blocked == 1):
+          return 0
+        if (list[new_index] == 'E'):
+          return 1
+        if (list[new_index].get_color() == self.get_color()):
+          return 0
+        return 1
+      zero_index = self.index - (self.index % 8)
+      print(zero_index)
+      horizontal = 0
+      for x in range(zero_index, zero_index + 8):
+        if (x == new_index):
+          horizontal = 1
+      if (horizontal != 1):
+        return 0
+      if (self.index < new_index):
+        for x in range(self.index + 1, new_index):
+          if (list[x] != 'E'):
+            blocked = 1
+      if (self.index > new_index):
+        for x in range(self.index - 1, new_index, -1):
+          if (list[x] != 'E'):
+            blocked = 1
+      if (blocked == 1):
+        print("blocked?")
+        return 0
+      if (list[new_index] == 'E'):
+        return 1
+      if (list[new_index].get_color() == self.get_color()):
+        return 0
+      return 1
 class King(Piece):
     typ = 'K'
     moved = 0
     def __init__(self, index, color, typ):
       super(King, self).__init__(index, color, typ)
+    def valid_move(self, new_index):
+      placeholder = self.index - 9
+      valid = 0
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 1
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 1
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 6
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 2
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 6
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 1
+      if (new_index == placeholder):
+        valid = 1
+      placeholder += 1
+      if (new_index == placeholder):
+        valid = 1
+      if (valid == 0):
+        return 0
+      if (list[new_index] == 'E'):
+        return 1
+      if (list[new_index].get_color() == self.color):
+        return 0
+      return 1
 """
 
 
@@ -165,7 +442,7 @@ wKing = pygame.image.load('wking.png')
 wQueen = pygame.image.load('wqueen.png')
 wPawn = pygame.image.load('wpawn.png')
 
-empty1 = pygame.image.load('empty1.png')
+
 
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -287,4 +564,3 @@ while not end_chess:
   pygame.display.update()
 
 # Screen setup
-

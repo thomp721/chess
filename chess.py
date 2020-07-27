@@ -4,7 +4,6 @@
 import pygame
 import sys
 
-
 pygame.init()
 
 
@@ -21,6 +20,10 @@ class Piece:
 
     def set_index(self, new_index):
       self.index = new_index
+
+    def set_type(self, new_type):
+      self.typ = new_type
+
 
     def get_type(self):
       return self.typ
@@ -118,6 +121,39 @@ class Pawn(Piece):
               return 0
       return 0
 
+    def draw(self):
+      y = int(self.index / 8)
+      x = int(self.index % 8)
+      #draws white
+      if (self.typ == 'WP'):
+        screen.blit(wPawn, (x * 100, y * 100))
+      #draws black
+      if (self.typ == 'P'):
+        screen.blit(bPawn, (x * 100, y * 100))
+      #draws highlighted white
+      if (self.typ == 'BLP'):
+        screen.blit(blPawn, (x * 100, y * 100))
+      #draws highlighted black
+      if (self.typ == 'GP'):
+        screen.blit(gPawn, (x * 100, y * 100))
+
+    def change_light(self):
+      print("got here")
+      if (self.typ == 'WP'):
+        print("in here")
+        self.set_type('BLP')
+        print(self.typ)
+        return
+      if (self.typ == 'BLP'):
+        self.typ = 'WP'
+        return
+      if (self.typ == 'P'):
+        self.typ = 'GP'
+        return
+      if (self.typ == 'GP'):
+        self.typ = 'P'
+        return
+
 class Rook(Piece):
     typ = 'R'
     moved = 0
@@ -173,6 +209,36 @@ class Rook(Piece):
         return 0
       return 1
 
+    def draw(self):
+      y = int(self.index / 8)
+      x = int(self.index % 8)
+      #draws white
+      if (self.typ == 'WR'):
+        screen.blit(wRook, (x * 100, y * 100))
+      #draws black
+      if (self.typ == 'R'):
+        screen.blit(bRook, (x * 100, y * 100))
+      #draws highlighted white
+      if (self.typ == 'BLR'):
+        screen.blit(blRook, (x * 100, y * 100))
+      #draws highlighted black
+      if (self.typ == 'GR'):
+        screen.blit(gRook, (x * 100, y * 100))
+
+    def change_light(self):
+      if (self.typ == 'WR'):
+        self.typ = 'BLR'
+        return
+      if (self.typ == 'BLR'):
+        self.typ = 'WR'
+        return
+      if (self.typ == 'R'):
+        self.typ = 'GR'
+        return
+      if (self.typ == 'GR'):
+        self.typ = 'R'
+        return
+
 
 class Knight(Piece):
     typ = 'N'
@@ -213,6 +279,35 @@ class Knight(Piece):
         return 0
       return 1
 
+    def draw(self):
+      y = int(self.index / 8)
+      x = int(self.index % 8)
+      #draws white
+      if (self.typ == 'WN'):
+        screen.blit(wKnight, (x * 100, y * 100))
+      #draws black
+      if (self.typ == 'N'):
+        screen.blit(bKnight, (x * 100, y * 100))
+      #draws highlighted white
+      if (self.typ == 'BLN'):
+        screen.blit(blKnight, (x * 100, y * 100))
+      #draws highlighted black
+      if (self.typ == 'GN'):
+        screen.blit(gKnight, (x * 100, y * 100))
+
+    def change_light(self):
+      if (self.typ == 'WN'):
+        self.typ = 'BLN'
+        return
+      if (self.typ == 'BLN'):
+        self.typ = 'WN'
+        return
+      if (self.typ == 'N'):
+        self.typ = 'GN'
+        return
+      if (self.typ == 'GN'):
+        self.typ = 'N'
+        return
 
 class Bishop(Piece):
     typ = 'B'
@@ -264,6 +359,36 @@ class Bishop(Piece):
           return 0
         return 1
       return 0
+
+    def draw(self):
+      y = int(self.index / 8)
+      x = int(self.index % 8)
+      #draws white
+      if (self.typ == 'WB'):
+        screen.blit(wBishop, (x * 100, y * 100))
+      #draws black
+      if (self.typ == 'B'):
+        screen.blit(bBishop, (x * 100, y * 100))
+      #draws highlighted white
+      if (self.typ == 'BLB'):
+        screen.blit(blBishop, (x * 100, y * 100))
+      #draws highlighted black
+      if (self.typ == 'GB'):
+        screen.blit(gBishop, (x * 100, y * 100))
+
+    def change_light(self):
+      if (self.typ == 'WB'):
+        self.typ = 'BLB'
+        return
+      if (self.typ == 'BLB'):
+        self.typ = 'WB'
+        return
+      if (self.typ == 'B'):
+        self.typ = 'GB'
+        return
+      if (self.typ == 'GB'):
+        self.typ = 'B'
+        return
 
 class Queen(Piece):
     typ = 'Q'
@@ -361,6 +486,38 @@ class Queen(Piece):
       if (list[new_index].get_color() == self.get_color()):
         return 0
       return 1
+
+
+    def draw(self):
+      y = int(self.index / 8)
+      x = int(self.index % 8)
+      #draws white
+      if (self.typ == 'WQ'):
+        screen.blit(wQueen, (x * 100, y * 100))
+      #draws black
+      if (self.typ == 'Q'):
+        screen.blit(bQueen, (x * 100, y * 100))
+      #draws highlighted white
+      if (self.typ == 'BLQ'):
+        screen.blit(blQueen, (x * 100, y * 100))
+      #draws highlighted black
+      if (self.typ == 'GQ'):
+        screen.blit(gQueen, (x * 100, y * 100))
+
+    def change_light(self):
+      if (self.typ == 'WQ'):
+        self.typ = 'BLQ'
+        return
+      if (self.typ == 'BLQ'):
+        self.typ = 'WQ'
+        return
+      if (self.typ == 'Q'):
+        self.typ = 'GQ'
+        return
+      if (self.typ == 'GQ'):
+        self.typ = 'Q'
+        return
+
 class King(Piece):
     typ = 'K'
     moved = 0
@@ -399,6 +556,37 @@ class King(Piece):
       if (list[new_index].get_color() == self.color):
         return 0
       return 1
+
+    def draw(self):
+      y = int(self.index / 8)
+      x = int(self.index % 8)
+      #draws white
+      if (self.typ == 'WK'):
+        screen.blit(wKing, (x * 100, y * 100))
+      #draws black
+      if (self.typ == 'K'):
+        screen.blit(bKing, (x * 100, y * 100))
+      #draws highlighted white
+      if (self.typ == 'BLK'):
+        screen.blit(blKing, (x * 100, y * 100))
+      #draws highlighted black
+      if (self.typ == 'GK'):
+        screen.blit(gKing, (x * 100, y * 100))
+
+    def change_light(self):
+      if (self.typ == 'WK'):
+        self.typ = 'BLK'
+        return
+      if (self.typ == 'BLK'):
+        self.typ = 'WK'
+        return
+      if (self.typ == 'K'):
+        self.typ = 'GK'
+        return
+      if (self.typ == 'GK'):
+        self.typ = 'K'
+        return
+
 """
 
 
@@ -442,7 +630,19 @@ wKing = pygame.image.load('wking.png')
 wQueen = pygame.image.load('wqueen.png')
 wPawn = pygame.image.load('wpawn.png')
 
+blKnight = pygame.image.load('blknight.png')
+blRook = pygame.image.load('blrook.png')
+blBishop = pygame.image.load('blbishop.png')
+blKing = pygame.image.load('blking.png')
+blQueen = pygame.image.load('blqueen.png')
+blPawn = pygame.image.load('blpawn.png')
 
+gKnight = pygame.image.load('gknight.png')
+gRook = pygame.image.load('grook.png')
+gBishop = pygame.image.load('gbishop.png')
+gKing = pygame.image.load('gking.png')
+gQueen = pygame.image.load('gqueen.png')
+gPawn = pygame.image.load('gpawn.png')
 
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -510,38 +710,12 @@ while not end_chess:
         pygame.draw.rect(screen, (255,255,255), (x * 100, y * 100, 100, 100))
     temp = 'P'
 
-  for i in range(8):
-    for j in range(8):
-      temp = list[((i * 8) + j)]
-      if (temp != 'E'):
-        temp = list[((i * 8) + j)].get_type()
-        if (temp == 'P'):
-          screen.blit(bPawn, (j * 100, i * 100))
-        if (temp == 'R'):
-          screen.blit(bRook, (j * 100, i * 100))
-        if (temp == 'N'):
-          screen.blit(bKnight, (j * 100, i * 100))
-        if (temp == 'B'):
-          screen.blit(bBishop, (j * 100, i * 100))
-        if (temp == 'K'):
-          screen.blit(bKing, (j * 100, i * 100))
-        if (temp == 'Q'):
-          screen.blit(bQueen, (j * 100, i * 100))
-        if (temp == 'WP'):
-          screen.blit(wPawn, (j * 100, i * 100))
-        if (temp == 'WR'):
-          screen.blit(wRook, (j * 100, i * 100))
-        if (temp == 'WN'):
-          screen.blit(wKnight, (j * 100, i * 100))
-        if (temp == 'WB'):
-          screen.blit(wBishop, (j * 100, i * 100))
-        if (temp == 'WK'):
-          screen.blit(wKing, (j * 100, i * 100))
-        if (temp == 'WQ'):
-          screen.blit(wQueen, (j * 100, i * 100))
+  for i in range(64):
+    if (draw_list[i] != 'E'):
+      draw_list[i].draw()
 
 
-  if event.type == pygame.MOUSEBUTTONUP:
+  if event.type == pygame.MOUSEBUTTONDOWN:
     x, y = pygame.mouse.get_pos()
     index = int((x / 100)) + int(((int(y / 100) / 1) * 8))
 
@@ -549,13 +723,22 @@ while not end_chess:
     if (index1 == -1):
       if (list[index] != 'E'):
         index1 = index
+        print("change?")
+        print(draw_list[index1].typ)
+        draw_list[index1].change_light()
+        print(draw_list[index1].typ)
     elif ((index != index1) & (index2 == -1)):
+      draw_list[index1].change_light()
       index2 = index
+
 
     if ((index1 != index2) & (index2 != -1)):
       list[index1].move(index2)
       index1 = -1
       index2 = -1
+      index = -1
+      draw_list = list
+
 
 
 

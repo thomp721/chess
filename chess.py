@@ -41,6 +41,7 @@ class Piece:
       list[new_index] = list[self.index]
       list[self.index] = 'E'
       self.index = new_index
+      return 1
 
 class Pawn(Piece):
     moved = 0
@@ -691,6 +692,9 @@ list = [br1, bn1, bb1, bq, bk, bb2, bn2, br2, bp1, bp2, bp3, bp4, bp5, bp6, bp7,
 
 draw_list = [br1, bn1, bb1, bq, bk, bb2, bn2, br2, bp1, bp2, bp3, bp4, bp5, bp6, bp7, bp8, 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', wp1, wp2, wp3, wp4, wp5, wp6, wp7, wp8, wr1, wn1, wb1, wq, wk, wb2, wn2, wr2]
 
+turn = "white"
+
+valid_1 = 0
 
 end_chess = False;
 
@@ -721,7 +725,7 @@ while not end_chess:
 
 
     if (index1 == -1):
-      if (list[index] != 'E'):
+      if ((list[index] != 'E') & (turn == list[index].get_color())):
         index1 = index
         print("change?")
         print(draw_list[index1].typ)
@@ -733,7 +737,12 @@ while not end_chess:
 
 
     if ((index1 != index2) & (index2 != -1)):
-      list[index1].move(index2)
+      valid_1 = list[index1].move(index2)
+      if (valid_1 == 1):
+        if (turn == "white"):
+          turn = "black"
+        elif (turn == "black"):
+          turn = "white"
       index1 = -1
       index2 = -1
       index = -1

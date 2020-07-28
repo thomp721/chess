@@ -35,9 +35,27 @@ class Piece:
       return 0
 
     def move(self, new_index):
+
+      #does en passaunt stuff
+      if (turn == "white"):
+        for x in range(len(list)):
+          if (list[x] != 'E'):
+            if (list[x].typ == 'WP'):
+              list[x].first_two_mov()
+      else:
+        for x in range(len(list)):
+          if (list[x] != 'E'):
+            if (list[x].typ == 'P'):
+              list[x].first_two_mov()
+
+
+
+      #checks if move is valid
       ret = self.valid_move(new_index)
       if (ret == 0):
         return 0
+
+      #checks for check
       placeholder = list[new_index]
       placeholder_index = self.index
       list[new_index] = list[self.index]
@@ -48,10 +66,7 @@ class Piece:
           if (list[x] != 'E'):
             if ((list[x].typ == 'WK') | (list[x].typ == 'WKC')):
               ret = x
-              print(ret)
-        print(ret)
         if (list[ret].in_check() == 1):
-          print("check")
           list[placeholder_index] = list[self.index]
           list[self.index] = placeholder
           self.index = placeholder_index
@@ -61,14 +76,12 @@ class Piece:
             if ((list[x].typ == 'K') | (list[x].typ == 'BKC')):
               ret = x
         list[ret].in_check()
-
-      if (turn == "black"):
+      else:
         for x in range(len(list)):
           if (list[x] != 'E'):
             if ((list[x].typ == 'K')  | (list[x].typ == 'KC')):
               ret = x
         if (list[ret].in_check() == 1):
-          print("check")
           list[placeholder_index] = list[self.index]
           list[self.index] = placeholder
           self.index = placeholder_index
@@ -82,11 +95,15 @@ class Piece:
 
 class Pawn(Piece):
     moved = 0
+    first_two_move = 0
     def __init__(self, index, color, typ):
       super(Pawn, self).__init__(index, color, typ)
 
     def pawn_moved(self):
         self.moved = 1
+
+    def first_two_mov(self):
+        self.first_two_move = 0
 
     def valid_move(self, new_index):
       if (new_index < 0):
@@ -95,6 +112,12 @@ class Pawn(Piece):
         if ((new_index != self.index - 8) & (new_index != self.index - 16)):
           if ((new_index != self.index - 7) & (new_index != self.index - 9)):
             return 0
+          if (list[new_index + 8] != 'E'):
+            if (list[new_index + 8].typ == 'P'):
+              if (list[new_index + 8].first_two_move == 1):
+                self.pawn_moved()
+                list[new_index + 8] = 'E'
+                return 1
           if (list[new_index] == 'E'):
             return 0
           if (list[new_index].get_color() == "black"):
@@ -115,6 +138,7 @@ class Pawn(Piece):
           if (new_index == (self.index - 16)):
             if ((list[self.index - 8] == 'E') & (list[self.index - 16] == 'E')):
               self.pawn_moved()
+              self.first_two_move = 1
               return 1
             else:
               return 0
@@ -128,6 +152,12 @@ class Pawn(Piece):
         if ((new_index != self.index + 8) & (new_index != self.index + 16)):
           if ((new_index != self.index + 7) & (new_index != self.index + 9)):
             return 0
+          if (list[new_index - 8] != 'E'):
+            if (list[new_index - 8].typ == 'WP'):
+              if (list[new_index - 8].first_two_move == 1):
+                self.pawn_moved()
+                list[new_index - 8] = 'E'
+                return 1
           if (list[new_index] == 'E'):
             return 0
           if (list[new_index].get_color() == "white"):
@@ -147,6 +177,7 @@ class Pawn(Piece):
         else:
           if (new_index == (self.index + 16)):
             if ((list[self.index + 8] == 'E') & (list[self.index + 16] == 'E')):
+              self.first_two_move = 1
               self.pawn_moved()
               return 1
             else:
@@ -445,6 +476,7 @@ class Queen(Piece):
           return 0
         return 1
       if ((((new_index - self.index) % 7) == 0) & (((y_new < y) & (x_new > x)) | ((y_new > y) & (x_new < x)))):
+
         if (new_index > self.index):
           for x in range(self.index + 7, new_index, 7):
             if (list[x] != 'E'):
@@ -744,7 +776,7 @@ while not end_chess:
       sys.exit()
   for x in range(8):
     for y in range(8):
-      if (((x + y) % 2) == 0):
+      if (((x + y) % 2) != 0):
         pygame.draw.rect(screen, (105,42,42), (x * 100, y * 100, 100, 100))
       else:
         pygame.draw.rect(screen, (255,255,255), (x * 100, y * 100, 100, 100))
@@ -773,7 +805,6 @@ while not end_chess:
     if ((index1 != index2) & (index2 != -1)):
       valid_1 = list[index1].move(index2)
       if (valid_1 == 1):
-        print(turn)
         if (turn == "white"):
           turn = "black"
         else:
@@ -782,7 +813,6 @@ while not end_chess:
       index2 = -1
       index = -1
       #draw_list = list
-      print(turn)
 
 
 

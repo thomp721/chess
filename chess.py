@@ -7,7 +7,6 @@ import sys
 pygame.init()
 
 
-
 #list = ['R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WR', 'WN', 'WB', 'WK', 'WQ', 'WB', 'WN', 'WR']
 class Piece:
     def __init__(self, index, color, typ):
@@ -57,7 +56,6 @@ class Piece:
       return check
 
     def move(self, new_index):
-
       #does en passant stuff
       if (turn == "white"):
         for x in range(len(list)):
@@ -78,7 +76,21 @@ class Piece:
       bet = ret
       if (ret == 0):
         return 0
+      global promote
+      global pro_index
+      global pro_color
 
+      if ((self.typ == 'P') | (self.typ == 'WP')):
+        if (self.typ == 'P'):
+          if (new_index > 55):
+            promote = True
+            pro_index = new_index
+            pro_color = self.color
+        else:
+          if (new_index < 8):
+           promote = True
+           pro_index = new_index
+           pro_color = self.color
 
       #covers castling with king moving to the right
       if (ret == 2):
@@ -241,8 +253,8 @@ class Piece:
             if ((list[x].typ == 'WK') | (list[x].typ == 'WKC')):
               ret = x
         list[ret].in_check()
-
       return 1
+
 
 class Pawn(Piece):
     moved = 0
@@ -935,6 +947,8 @@ gPawn = pygame.image.load('gpawn.png')
 wKingCheck = pygame.image.load('wkingcheck.png')
 bKingCheck = pygame.image.load('bkingcheck.png')
 
+pScreen = pygame.image.load('promote screen.png')
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 squares = []
 
@@ -985,28 +999,77 @@ turn = "white"
 
 valid_1 = 0
 
-end_chess = False;
+end_chess = False
+promote = False
+pro_index = -1
+pro_color = "white"
 
 index1 = -1
 index2 = -1
 
 
 while not end_chess:
+
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
       sys.exit()
-  for x in range(8):
-    for y in range(8):
-      if (((x + y) % 2) != 0):
-        pygame.draw.rect(screen, (105,42,42), (x * 100, y * 100, 100, 100))
-      else:
-        pygame.draw.rect(screen, (255,255,255), (x * 100, y * 100, 100, 100))
-    temp = 'P'
 
-  for i in range(64):
-    if (list[i] != 'E'):
-      list[i].draw()
 
+  if (promote == True):
+    pygame.time.wait(25)
+    screen.blit(pScreen, (75, 50))
+    if event.type == pygame.MOUSEBUTTONDOWN:
+      x, y = pygame.mouse.get_pos()
+      print("x:")
+      print(x)
+      print("y:")
+      print(y)
+      if ((x >= 150) & (x <= 259)):
+        if ((y >= 175) & (y <= 214)):
+          if (pro_color == "black"):
+            list[pro_index] = Queen(pro_index, pro_color, 'Q')
+            promote = False
+          else:
+            list[pro_index] = Queen(pro_index, pro_color, 'WQ')
+            promote = False
+        if ((y >= 264) & (y <= 302)):
+          if (pro_color == "black"):
+            list[pro_index] = Rook(pro_index, pro_color, 'R')
+            promote = False
+          else:
+            list[pro_index] = Rook(pro_index, pro_color, 'WR')
+            promote = False
+        if ((y >= 351) & (y <= 389)):
+          if (pro_color == "black"):
+            list[pro_index] = Knight(pro_index, pro_color, 'N')
+            promote = False
+          else:
+            list[pro_index] = Knight(pro_index, pro_color, 'WN')
+            promote = False
+        if ((y >= 439) & (y <= 477)):
+          if (pro_color == "black"):
+            list[pro_index] = Bishop(pro_index, pro_color, 'B')
+            promote = False
+          else:
+            list[pro_index] = Bishop(pro_index, pro_color, 'WB')
+            promote = False
+
+    pygame.display.update()
+
+  else:
+    for x in range(8):
+      for y in range(8):
+        if (((x + y) % 2) != 0):
+          pygame.draw.rect(screen, (105,42,42), (x * 100, y * 100, 100, 100))
+        else:
+          pygame.draw.rect(screen, (255,255,255), (x * 100, y * 100, 100, 100))
+      temp = 'P'
+
+    for i in range(64):
+      if (list[i] != 'E'):
+        list[i].draw()
+
+      promote = False
 
   if event.type == pygame.MOUSEBUTTONDOWN:
     x, y = pygame.mouse.get_pos()

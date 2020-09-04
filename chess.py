@@ -135,8 +135,14 @@ class Piece:
         list[new_index - 1] = list[rook_index]
         list[new_index - 1].index = new_index - 1
         self.index = new_index
+        list[new_index] = list[new_index - 2]
+        list[new_index - 2] = 'E'
+        print(list[new_index])
+        print(list[new_index - 2])
+        list[new_index].index = new_index
         list[new_index - 1].has_moved()
         list[rook_index] = 'E'
+
 
       #covers castling with king moving to the left
       if (ret == 3):
@@ -180,23 +186,46 @@ class Piece:
         list[new_index + 1] = list[rook_index]
         list[new_index + 1].index = new_index + 1
         self.index = new_index
+        list[new_index] = list[new_index + 2]
+        list[new_index + 2] = 'E'
+        print(list[new_index])
+        print(list[new_index + 2])
+        list[new_index].index = new_index
         list[new_index + 1].has_moved()
         list[rook_index] = 'E'
 
 
-
       #checks for check
-      placeholder = list[new_index]
-      placeholder_index = self.index
-      list[new_index] = list[self.index]
-      list[self.index] = 'E'
-      self.index = new_index
+      if ((ret != 2) & (ret != 3)):
+        placeholder = list[new_index]
+        placeholder_index = self.index
+        list[new_index] = list[self.index]
+        list[self.index] = 'E'
+        self.index = new_index
+      else:
+        if (turn == "white"):
+           for x in range(len(list)):
+             if (list[x] != 'E'):
+               if ((list[x].typ == 'K') | (list[x].typ == 'BKC')):
+                 ret = x
+           list[ret].in_check()
+        else:
+          for x in range(len(list)):
+            if (list[x] != 'E'):
+              if ((list[x].typ == 'WK') | (list[x].typ == 'WKC')):
+                ret = x
+          list[ret].in_check()
+        return 1
+
+
 
       if (turn == "white"):
         for x in range(len(list)):
           if (list[x] != 'E'):
+            print(x)
             if ((list[x].typ == 'WK') | (list[x].typ == 'WKC')):
               ret = x
+          print("x")
         #checks if a check happens, and if so undoes the move and its effects
         if (list[ret].in_check() == 1):
           list[placeholder_index] = list[self.index]
@@ -1016,7 +1045,7 @@ while not end_chess:
 
 
   if (promote == True):
-    pygame.time.wait(25)
+    pygame.time.wait(250)
     screen.blit(pScreen, (75, 50))
     if event.type == pygame.MOUSEBUTTONDOWN:
       x, y = pygame.mouse.get_pos()

@@ -37,20 +37,13 @@ class Piece:
 
       check = 0
       moved = 0
-      print("index 1:")
-      print(index_1)
-      print("index 2:")
-      print(index_2)
+
       for y in range(index_1, index_2):
         for x in range(len(list)):
           if (list[x] != 'E'):
             moved = list[x].moved
             if ((list[x].valid_move(y) != 0) & (list[x].color != color)):
-              print("x that worked:")
-              print(x)
-              print("y that worked:")
-              print(y)
-              print("in the chekc thing?")
+
               check = 1
             list[x].moved = moved
       if (check == 1):
@@ -66,10 +59,12 @@ class Piece:
       return check
 
     def move(self, new_index):
+      global verified
+      if (verified != 2):
+        verified = 0
       #does en passant stuff
       global noo_index
       noo_index = new_index
-      print("start")
       if (turn == "white"):
         for x in range(len(list)):
           if (list[x] != 'E'):
@@ -85,7 +80,7 @@ class Piece:
       ret = self.valid_move(new_index)
       bet = ret
       if (ret == 0):
-        print("its returning in here ///")
+
         return 0
       global promote
       global pro_index
@@ -112,6 +107,9 @@ class Piece:
           if (list[x] != 'E'):
             if ((list[x].typ == 'R') | (list[x].typ == 'WR')):
               break
+        for x in range(rook_index - 1, old_index, -1):
+          if (list[x] != 'E'):
+            return 0
         checkk = self.in_checkk(self.index, rook_index, self.color)
         if (checkk == 1):
           return 0
@@ -161,6 +159,9 @@ class Piece:
           if (list[x] != 'E'):
             if ((list[x].typ == 'R') | (list[x].typ == 'WR')):
               break
+        for x in range(rook_index + 1, old_index):
+          if (list[x] != 'E'):
+            return 0
         checkk = self.in_checkk(rook_index, self.index, self.color)
         if (checkk == 1):
           return 0
@@ -191,6 +192,9 @@ class Piece:
           if (list[x] != 'E'):
             if ((list[x].typ == 'R') | (list[x].typ == 'WR')):
               break
+        for x in range(rook_index + 1, rook_index):
+          if (list[x] != 'E'):
+            return 0
         list[new_index + 1] = list[rook_index]
         list[new_index + 1].index = new_index + 1
         self.index = new_index
@@ -287,10 +291,11 @@ class Piece:
             if ((list[x].typ == 'WK') | (list[x].typ == 'WKC')):
               ret = x
         list[ret].in_check()
-      print("end")
+
       if ((self.typ == 'P') | (self.typ == 'WP')):
         self.has_moved()
 
+      verified = 1
       return 1
 
 
@@ -301,17 +306,15 @@ class Pawn(Piece):
       super(Pawn, self).__init__(index, color, typ)
 
     def has_moved(self):
-        print("pawn moved")
+
         if (self.moved == 1):
           self.moved = 2
         else:
           self.moved = 1
 
     def first_two_mov(self):
-        print("got in hererer")
         if (self.first_two_move == 1):
           self.first_two_move = 2
-        print(self.first_two_move)
     def valid_move(self, new_index):
       ret = 0
 
@@ -830,7 +833,7 @@ class King(Piece):
       if (valid == 0):
   #castling checker
         if (self.color == "white"):
-          if (new_index == (self.index + 2)):
+          if ((new_index == (self.index + 2)) & ((self.index + 3) < 64)):
             if (list[self.index + 3] != 'E'):
               if (list[self.index + 3].typ == 'WR'):
                 if ((list[self.index + 3].moved == 0) & (list[self.index].moved == 0)):
@@ -838,7 +841,7 @@ class King(Piece):
                     if (list[x] != 'E'):
                       return 0
                 return 2
-          if (new_index == (self.index - 2)):
+          if (new_index == (self.index - 2) & ((self.index - 4) >= 0)):
             if (list[self.index - 4] != 'E'):
               if (list[self.index - 4].typ == 'WR'):
                 if ((list[self.index - 4].moved == 0) & (list[self.index].moved == 0)):
@@ -927,110 +930,135 @@ class King(Piece):
       if (check == 1):
         for x in range(len(list)):
           if (list[self.index].valid_move(x) == 1):
-            print("valid square:")
-            print(x)
             king_valid = 1
             if (list[x] == 'E'):
+              placeholder_1 = list[self.index]
+              index_placeholder_1 = self.index
+              list[x] = list[self.index]
+              list[self.index] = 'E'
               for y in range(len(list)):
                 if (list[y] != 'E'):
                   if (list[y].color != self.color):
                     if (list[y].valid_move(x) != 0):
                       king_valid = 0
-              if (king_valid == 1):
-                king_valid = 2
-            else:
-              placeholder = list[x]
+              list[index_placeholder_1] = placeholder_1
+              list[index_placeholder_1].index = index_placeholder_1
               list[x] = 'E'
+              if (king_valid == 1):
+                print("this one343432")
+                check = 2
+            else:
+              placeholder_1 = list[self.index]
+              index_placeholder_1 = self.index
+              placeholder = list[x]
+              list[x] = list[self.index]
+              list[self.index] = 'E'
               for y in range(len(list)):
                 if (list[y] != 'E'):
                   if (list[y].color != self.color):
-                    print("piece square")
-                    print(y)
                     if (list[y].valid_move(x) != 0):
                       king_valid = 0
               list[x] = placeholder
+              list[index_placeholder_1] = placeholder_1
+              list[index_placeholder_1].index = index_placeholder_1
               if (king_valid == 1):
-                king_valid = 2
-        if (king_valid == 2):
-          check = 2
+                print("this on33eee")
+                check = 2
         king_valid = 0
         for x in range(self.index, 0, -8):
           for y in range(len(list)):
-            if (list[y] != 'E'):
-              if (list[y].color == self.color):
-                if (list[y].valid_move(x)):
-                  list[x] = list[y]
-                  list[y] = 'E'
-                  list[x].index = x
-                  king_valid = 1
-                  for z in range(len(list)):
-                    if (list[z] != 'E'):
-                      if (list[z].color != self.color):
-                        if (list[z].valid_move(king_index) != 0):
-                          print("this onee")
-                          print("z:")
-                          print(z)
-                          king_valid = 0
-                  list[y] = list[x]
-                  list[x] = 'E'
-                  list[y].index = y
-                  if (king_valid == 1):
-                    print("x wrong:")
-                    print(x)
-                    print("y wrong:")
-                    print(y)
-                    king_valid = 2
-        if (king_valid == 2):
-          check = 2
-          print("the one actually fucked it up :/")
+            if (y != self.index):
+              if (list[y] != 'E'):
+                if (list[y].color == self.color):
+                  if (list[y].valid_move(x)):
+                    list[x] = list[y]
+                    list[y] = 'E'
+                    list[x].index = x
+                    king_valid = 1
+                    for z in range(len(list)):
+                      if (list[z] != 'E'):
+                        if (list[z].color != self.color):
+                          if (list[z].valid_move(self.index) != 0):
+
+                            king_valid = 0
+                    list[y] = list[x]
+                    list[x] = 'E'
+                    list[y].index = y
+                    if (king_valid == 1):
+                      print("this oneeee")
+                      check = 2
         king_valid = 0
         for x in range(self.index, len(list), 8):
           for y in range(len(list)):
-            if (list[y] != 'E'):
-              if (list[y].color == self.color):
-                if (list[y].valid_move(x)):
-                  list[x] = list[y]
-                  list[y] = 'E'
-                  list[x].index = x
-                  if (self.in_checkk(self.index, self.index + 1, self.color) == 0):
-                    print("y:")
-                    print(y)
-                    print("this twoo")
-                    check = 2
-                  list[y] = list[x]
-                  list[x] = 'E'
-                  list[y].index = y
-        for x in range(self.index, 8 - (self.index - ((len(list) - self.index) % 8))):
+            if (y != self.index):
+              if (list[y] != 'E'):
+                if (list[y].color == self.color):
+                  if (list[y].valid_move(x)):
+                    list[x] = list[y]
+                    list[y] = 'E'
+                    list[x].index = x
+                    king_valid = 1
+                    for z in range(len(list)):
+                      if (list[z] != 'E'):
+                        if (list[z].color != self.color):
+                          if (list[z].valid_move(self.index) != 0):
+                            king_valid = 0
+                    list[y] = list[x]
+                    list[x] = 'E'
+                    list[y].index = y
+                    if (king_valid == 1):
+                      print("this one33")
+                      check = 2
+        king_valid = 0
+        for x in range(self.index, self.index + (8 - (self.index % 8))):
           for y in range(len(list)):
-            if (list[y] != 'E'):
-              if (list[y].color == self.color):
-                if (list[y].valid_move(x)):
-                  list[x] = list[y]
-                  list[y] = 'E'
-                  list[x].index = x
-                  if (self.in_checkk(self.index, self.index + 1, self.color) == 0):
-                    print("this threee")
-                    check = 2
-                  list[y] = list[x]
-                  list[x] = 'E'
-                  list[y].index = y
-        for x in range(self.index, self.index - ((len(list) - self.index) % 8), -1):
+            if (y != self.index):
+              if (list[y] != 'E'):
+                if (list[y].color == self.color):
+                  print(x)
+                  if (list[y].valid_move(x)):
+                    list[x] = list[y]
+                    list[y] = 'E'
+                    list[x].index = x
+                    king_valid = 1
+                    for z in range(len(list)):
+                      if (list[z] != 'E'):
+                        if (list[z].color != self.color):
+                          if (list[z].valid_move(self.index) != 0):
+
+                            king_valid = 0
+                    list[y] = list[x]
+                    list[x] = 'E'
+                    list[y].index = y
+                    if (king_valid == 1):
+                      print("this onee")
+                      check = 2
+        king_valid = 0
+        for x in range(self.index, self.index - (self.index % 8) - 1, -1):
           for y in range(len(list)):
-            if (list[y] != 'E'):
-              if (list[y].color == self.color):
-                if (list[y].valid_move(x)):
-                  list[x] = list[y]
-                  list[y] = 'E'
-                  list[x].index = x
-                  if (self.in_checkk(self.index, self.index + 1, self.color) == 0):
-                    print("this fourrr")
-                    check = 2
-                  list[y] = list[x]
-                  list[x] = 'E'
-                  list[y].index = y
+            if (y != self.index):
+              if (list[y] != 'E'):
+                if (list[y].color == self.color):
+                  if (list[y].valid_move(x)):
+                    list[x] = list[y]
+                    list[y] = 'E'
+                    list[x].index = x
+                    king_valid = 1
+                    for z in range(len(list)):
+                      if (list[z] != 'E'):
+                        if (list[z].color != self.color):
+                          if (list[z].valid_move(self.index) != 0):
+                            king_valid = 0
+                    list[y] = list[x]
+                    list[x] = 'E'
+                    list[y].index = y
+                    if (king_valid == 1):
+                      print("this one")
+                      check = 2
       if (check == 1):
         global checkmate
         checkmate = 1
+        print("chekcmoite")
       if (check != 0):
         check = 1
       list = list_2.copy()
@@ -1098,6 +1126,7 @@ wKingCheck = pygame.image.load('wkingcheck.png')
 bKingCheck = pygame.image.load('bkingcheck.png')
 
 pScreen = pygame.image.load('promote screen.png')
+cMate = pygame.image.load('checkmate.png')
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 squares = []
@@ -1158,6 +1187,7 @@ checkmate = 0
 index1 = -1
 index2 = -1
 noo_index = 0
+verified = 0
 
 while not end_chess:
 
@@ -1165,22 +1195,14 @@ while not end_chess:
     if event.type == pygame.QUIT:
       sys.exit()
 
-  if (checkmate == 1):
-    pygame.time.wait(25)
-    if (list[noo_index] != 'E'):
-      if ((list[noo_index].typ == 'WKC') | (list[noo_index].typ == 'KC') | (list[noo_index].typ == 'WK') | (list[noo_index].typ == 'K')):
-        checkmate = 0
-    print("poop")
+
 
   if (promote == True):
     pygame.time.wait(250)
     screen.blit(pScreen, (75, 50))
     if event.type == pygame.MOUSEBUTTONDOWN:
       x, y = pygame.mouse.get_pos()
-      print("x:")
-      print(x)
-      print("y:")
-      print(y)
+
       if ((x >= 150) & (x <= 259)):
         if ((y >= 175) & (y <= 214)):
           if (pro_color == "black"):
@@ -1214,19 +1236,30 @@ while not end_chess:
     pygame.display.update()
 
   else:
-    for x in range(8):
-      for y in range(8):
-        if (((x + y) % 2) != 0):
-          pygame.draw.rect(screen, (105,42,42), (x * 100, y * 100, 100, 100))
-        else:
-          pygame.draw.rect(screen, (255,255,255), (x * 100, y * 100, 100, 100))
-      temp = 'P'
 
-    for i in range(64):
-      if (list[i] != 'E'):
-        list[i].draw()
+    if (((checkmate == 1) & (verified == 1)) | (verified == 2)):
+      pygame.time.wait(25)
+      if (list[noo_index] != 'E'):
+        if ((list[noo_index].typ == 'WKC') | (list[noo_index].typ == 'KC') | (list[noo_index].typ == 'WK') | (list[noo_index].typ == 'K')):
+          checkmate = 0
+      if (checkmate != 0):
+        screen.blit(cMate, (75, 50))
+        verified = 2
 
-      promote = False
+    else:
+      for x in range(8):
+        for y in range(8):
+          if (((x + y) % 2) != 0):
+            pygame.draw.rect(screen, (105,42,42), (x * 100, y * 100, 100, 100))
+          else:
+            pygame.draw.rect(screen, (255,255,255), (x * 100, y * 100, 100, 100))
+        temp = 'P'
+
+      for i in range(64):
+        if (list[i] != 'E'):
+          list[i].draw()
+
+        promote = False
 
   if event.type == pygame.MOUSEBUTTONDOWN:
     x, y = pygame.mouse.get_pos()
